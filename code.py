@@ -13,3 +13,4 @@ div_report["Data"] = wrong_date.str.replace(" ","")
 
 print(div_report["Data"].head(50))
 
+#next step-> convert type  and format of Data column
