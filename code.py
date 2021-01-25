@@ -1,14 +1,33 @@
 #this is the file contaning the transformation code
 import pandas as pd
 import numpy as np
+
+
+#import excel file
 div_report = pd.read_excel("/Users/vbarros/Documents/Analysis/PythonProject/ProventosRecebidos.xlsx")
 
 #show all rows:
+
 #pd.set_option("display.max_rows", None)
 #print(div_report.head(50))
 
+
 #Convert type (object to datetime) and format (MM/DD/YYYY to YYYY-MM-DD) of Data column.
 div_report["Data"] = pd.to_datetime(div_report["Data"])
+
+#Convert type (object to float) of other columns.
+
+div_report["Valor Unitário (R$)"] = [x.replace(",",".") for x in div_report["Valor Unitário (R$)"]]
+div_report["Valor Unitário (R$)"] = div_report["Valor Unitário (R$)"].astype(float)
+
+div_report["Bruto Recebido (R$)"] = [x.replace(",",".") for x in div_report["Bruto Recebido (R$)"]]
+div_report["Bruto Recebido (R$)"] = div_report["Bruto Recebido (R$)"].astype(float)
+
+div_report["IR (R$)"] = [x.replace(",",".") for x in div_report["IR (R$)"]]
+div_report["IR (R$)"] = div_report["IR (R$)"].astype(float)
+
+div_report["Liquido Recebido (R$)"] = [x.replace(",",".") for x in div_report["Liquido Recebido (R$)"]]
+div_report["Liquido Recebido (R$)"] = div_report["Liquido Recebido (R$)"].astype(float)
 
 
 #Clean "Papel" column replacing additional information by the Ticker.
@@ -44,12 +63,10 @@ div_report["Papel"] = np.where(abev, 'ABEV3',
                       ticker.str.replace(" ", ""))))))))))))))
 
 
-
 #Group "Data" columns by Year
 div_report["Data"] = div_report["Data"].dt.strftime('%Y')
 
-#Creating the pivot table
-pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="first", fill_value=0)
+pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)
 print(pivot)
 
-#Next step -> Change order of columns in pivot table and check values
+#Next step -> Change order of columns in pivot table
