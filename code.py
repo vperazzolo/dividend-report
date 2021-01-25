@@ -43,10 +43,13 @@ div_report["Papel"] = np.where(abev, 'ABEV3',
                       np.where(trpl, 'TRPL4',
                       ticker.str.replace(" ", ""))))))))))))))
 
-#print(div_report["Papel"])
-#print(div_report)
 
-pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="first")
+
+#Group "Data" columns by Year
+div_report["Data"] = div_report["Data"].dt.strftime('%Y')
+
+#Creating the pivot table
+pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="first", fill_value=0)
 print(pivot)
 
-#Next step -> Group dates in years in the Pivot Table
+#Next step -> Change order of columns in pivot table and check values
