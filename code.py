@@ -2,32 +2,23 @@
 import pandas as pd
 import numpy as np
 
-
 #import excel file
 div_report = pd.read_excel("/Users/vbarros/Documents/Analysis/PythonProject/ProventosRecebidos.xlsx")
 
-#show all rows:
-
+## Show all rows:
 #pd.set_option("display.max_rows", None)
 #print(div_report.head(50))
 
 
-#Convert type (object to datetime) and format (MM/DD/YYYY to YYYY-MM-DD) of Data column.
+## Convert type (object to datetime) and format (MM/DD/YYYY to YYYY-MM-DD) of Data column.
 div_report["Data"] = pd.to_datetime(div_report["Data"])
 
-#Convert type (object to float) of other columns.
+## Convert decimal delimiter "," to "." and type (object to float) of other value columns.
+div_report = div_report.replace(",",".", regex=True)
+div_report[["Valor Unitário (R$)", "Bruto Recebido (R$)", "IR (R$)", "Liquido Recebido (R$)"]] = div_report[["Valor Unitário (R$)", "Bruto Recebido (R$)", "IR (R$)", "Liquido Recebido (R$)"]].astype(float)
 
-div_report["Valor Unitário (R$)"] = [x.replace(",",".") for x in div_report["Valor Unitário (R$)"]]
-div_report["Valor Unitário (R$)"] = div_report["Valor Unitário (R$)"].astype(float)
-
-div_report["Bruto Recebido (R$)"] = [x.replace(",",".") for x in div_report["Bruto Recebido (R$)"]]
-div_report["Bruto Recebido (R$)"] = div_report["Bruto Recebido (R$)"].astype(float)
-
-div_report["IR (R$)"] = [x.replace(",",".") for x in div_report["IR (R$)"]]
-div_report["IR (R$)"] = div_report["IR (R$)"].astype(float)
-
-div_report["Liquido Recebido (R$)"] = [x.replace(",",".") for x in div_report["Liquido Recebido (R$)"]]
-div_report["Liquido Recebido (R$)"] = div_report["Liquido Recebido (R$)"].astype(float)
+## Just another way to replace values por column
+#div_report["Valor Unitário (R$)"] = [x.replace(",",".") for x in div_report["Valor Unitário (R$)"]]
 
 
 #Clean "Papel" column replacing additional information by the Ticker.
@@ -63,10 +54,16 @@ div_report["Papel"] = np.where(abev, 'ABEV3',
                       ticker.str.replace(" ", ""))))))))))))))
 
 
-#Group "Data" columns by Year
+## Group "Data" columns by Year
 div_report["Data"] = div_report["Data"].dt.strftime('%Y')
 
+## Create pivot table
 pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)
+
+## Sort the pivot table column ("Data") in the descending level.
+pivot = pivot.sort_index(axis=1, level=1, ascending=False)
+
 print(pivot)
 
-#Next step -> Change order of columns in pivot table
+
+#Next step -> 
