@@ -16,6 +16,7 @@ div_report["Data"] = pd.to_datetime(div_report["Data"])
 ## Convert decimal delimiter "," to "." and type (object to float) of other value columns.
 div_report = div_report.replace(",",".", regex=True)
 div_report[["Valor Unitário (R$)", "Bruto Recebido (R$)", "IR (R$)", "Liquido Recebido (R$)"]] = div_report[["Valor Unitário (R$)", "Bruto Recebido (R$)", "IR (R$)", "Liquido Recebido (R$)"]].astype(float)
+#print(div_report.dtypes)
 
 ## Just another way to replace values por column
 #div_report["Valor Unitário (R$)"] = [x.replace(",",".") for x in div_report["Valor Unitário (R$)"]]
@@ -58,12 +59,18 @@ div_report["Papel"] = np.where(abev, 'ABEV3',
 div_report["Data"] = div_report["Data"].dt.strftime('%Y')
 
 ## Create pivot table
-pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)
+pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)#, margins=True, margins_name="Grand Total")
 
 ## Sort the pivot table column ("Data") in the descending level.
 pivot = pivot.sort_index(axis=1, level=1, ascending=False)
 
+## Pivot table calculation
+pivot["Total"] = pivot.sum(axis="columns")
+pivot["Mean"] = pivot.mean(axis="columns")
+pivot["Median"] = pivot.median(axis="columns")
+#pivot_total_year = pivot.sum(axis="index")
+
 print(pivot)
 
 
-#Next step -> 
+#Next step -> Create vizualizations
