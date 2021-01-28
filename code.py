@@ -1,6 +1,7 @@
 #this is the file contaning the transformation code
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 #import excel file
 div_report = pd.read_excel("/Users/vbarros/Documents/Analysis/PythonProject/ProventosRecebidos.xlsx")
@@ -58,19 +59,27 @@ div_report["Papel"] = np.where(abev, 'ABEV3',
 ## Group "Data" columns by Year
 div_report["Data"] = div_report["Data"].dt.strftime('%Y')
 
-## Create pivot table
-pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)#, margins=True, margins_name="Grand Total")
+## Create pivot table with Papel as Index
+pivot = div_report.pivot_table(index="Papel", columns="Data", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0, margins=True, margins_name="Grand Total")
 
-## Sort the pivot table column ("Data") in the descending level.
-pivot = pivot.sort_index(axis=1, level=1, ascending=False)
+# Sort the pivot table column ("Data") in the descending level.
+#pivot = pivot.sort_index(axis=1, level=1, ascending=False)
 
 ## Pivot table calculation
-pivot["Total"] = pivot.sum(axis="columns")
-pivot["Mean"] = pivot.mean(axis="columns")
-pivot["Median"] = pivot.median(axis="columns")
+#pivot["Total"] = pivot.sum(axis="columns")
+#pivot["Mean"] = pivot.mean(axis="columns")
+#pivot["Median"] = pivot.median(axis="columns")
 #pivot_total_year = pivot.sum(axis="index")
+#print(pivot)
 
-print(pivot)
+## Create pivot table with Data as index and graph
+pivot_plot = div_report.pivot_table(index="Data", columns="Papel", values="Liquido Recebido (R$)", aggfunc="sum", fill_value=0)
+
+#pivot_plot.plot(kind="bar")
+pivot_plot.plot(rot=45)
+plt.show()
 
 
-#Next step -> Create vizualizations
+#Next steps -> select only some columns on the graph or create a interactive graph with Bokeh
+
+
